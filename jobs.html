@@ -65,12 +65,12 @@
   <!-- FILTERS + LIST -->
   <section style="background:#0b1627;">
     <div style="max-width:1240px;margin:0 auto;padding:44px 48px 96px;">
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px;">
-        <span style="background:var(--accent,#47AEF2);color:#08172c;font-weight:600;font-size:13.5px;padding:9px 16px;border-radius:20px;">All roles</span>
-        <span style="background:transparent;color:#c1cdd8;border:1px solid rgba(255,255,255,.16);font-size:13.5px;padding:9px 16px;border-radius:20px;">United States</span>
-        <span style="background:transparent;color:#c1cdd8;border:1px solid rgba(255,255,255,.16);font-size:13.5px;padding:9px 16px;border-radius:20px;">Europe</span>
-        <span style="background:transparent;color:#c1cdd8;border:1px solid rgba(255,255,255,.16);font-size:13.5px;padding:9px 16px;border-radius:20px;">IC</span>
-        <span style="background:transparent;color:#c1cdd8;border:1px solid rgba(255,255,255,.16);font-size:13.5px;padding:9px 16px;border-radius:20px;">Leadership</span>
+      <div id="jobs-filters" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px;">
+        <button class="job-filter is-active" data-filter="all">All roles</button>
+        <button class="job-filter" data-filter="us">United States</button>
+        <button class="job-filter" data-filter="eu">Europe</button>
+        <button class="job-filter" data-filter="ic">IC</button>
+        <button class="job-filter" data-filter="leadership">Leadership</button>
       </div>
 
       <div id="jobs-list" style="display:flex;flex-direction:column;gap:14px;">

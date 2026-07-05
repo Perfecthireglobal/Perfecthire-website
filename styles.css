@@ -1,0 +1,20 @@
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:#091429;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{cursor:pointer}
+
+@keyframes phPulse{
+  0%,100%{box-shadow:0 0 0 4px rgba(71,174,242,.12),0 0 12px 2px rgba(71,174,242,.4)}
+  50%{box-shadow:0 0 0 8px rgba(71,174,242,.05),0 0 24px 5px rgba(71,174,242,.75)}
+}
+
+.ph-inp{width:100%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.14);border-radius:9px;padding:13px 15px;color:#fff;font-size:15px;font-family:'IBM Plex Sans',sans-serif;outline:none;}
+.ph-inp::placeholder{color:#6f7d8c;}
+.ph-inp:focus{border-color:#47AEF2;}
+
+.ph-tab{font-family:'Archivo',sans-serif;font-weight:600;font-size:15px;padding:12px 24px;border-radius:9px;cursor:pointer;transition:all .15s ease;border:1px solid transparent;background:transparent;color:#5a6b7a;}
+.ph-tab.is-active{background:var(--accent,#47AEF2);color:#08172c;}
+.ph-tab:not(.is-active){border-color:rgba(12,28,51,.14);}
+
+.job-filter{font-family:'IBM Plex Sans',sans-serif;font-size:13.5px;padding:9px 16px;border-radius:20px;cursor:pointer;transition:all .15s ease;border:1px solid rgba(255,255,255,.16);background:transparent;color:#c1cdd8;}
+.job-filter.is-active{background:var(--accent,#47AEF2);color:#08172c;border-color:transparent;font-weight:600;}
