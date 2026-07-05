@@ -7,13 +7,28 @@ context, kept for reference).
 
 ## Site structure
 
-- `index.html`, `for-companies.html`, `investors.html`, `jobs.html`, `about.html`, `contact.html` — the six pages, each self-contained (nav/footer duplicated on purpose, no build step)
+- `index.html`, `for-companies.html`, `investors.html`, `jobs.html`, `about.html`, `contact.html` — the six main pages, each self-contained (nav/footer duplicated on purpose, no build step)
+- `apply.html` — open application page for candidates (CV upload or LinkedIn link)
+- `thanks.html` — confirmation page shown after any form is submitted
 - `css/styles.css` — shared base styles, fonts, animations
-- `js/main.js` — shared behavior: homepage live placements ticker/map beacon, the US/Europe expansion toggle, the Jobs page listing fetch, the Contact page submit button
+- `js/main.js` — shared behavior: homepage live placements ticker/map beacon, US/Europe expansion toggle, Jobs listing fetch + filters, and the form helpers (redirect target + application validation)
 - `assets/` — logo, Ralph's photo, world map graphic, social share image
 - `functions/api/jobs.js` — Cloudflare Pages Function that reads open roles from Notion server side (see `docs/notion-jobs-schema.md`)
 - `404.html` — branded not-found page (Cloudflare Pages serves this automatically)
 - `robots.txt`, `sitemap.xml` — SEO / crawler files
+
+## Forms & email (FormSubmit)
+
+Both forms send straight to **info@perfecthireglobal.com** with no backend, using the free [FormSubmit](https://formsubmit.co) service:
+
+- **Contact page** (`contact.html`) — the "Request my consultation" form emails you the buyer's details. The separate "Pick a time on our calendar" button still goes straight to Calendly.
+- **Apply page** (`apply.html`) — an open application for candidates: name, email, **mobile phone**, and either a **CV upload** (arrives as an email attachment) **or** a **LinkedIn URL**. The form requires at least one of CV/LinkedIn.
+
+**One-time activation (required):** the very first time either form is submitted, FormSubmit sends a confirmation email to info@perfecthireglobal.com with an "Activate form" button. Click it once. After that, every submission arrives automatically. Do this test submit yourself on the live `.pages.dev` URL before launch.
+
+After submitting, visitors land on the branded `thanks.html`. That redirect target is set at runtime by `js/main.js`, so it works on both the preview URL and the live domain automatically.
+
+To change the destination address later, edit the `action="https://formsubmit.co/…"` line in `contact.html` and `apply.html`. To cut spam, FormSubmit gives you a hashed URL (e.g. `https://formsubmit.co/abcdef…`) after activation that you can swap in so your email address is not visible in the page source.
 
 ## SEO
 
@@ -35,7 +50,7 @@ other host to 301-redirect to your chosen one (see go-live step 6).
    - Build output directory: `/` (repo root)
    - You immediately get a live preview URL like `your-project.pages.dev` to test on.
 3. **Notion env vars.** In the Pages project settings, add the two variables from `docs/notion-jobs-schema.md` (`NOTION_TOKEN`, `NOTION_DATABASE_ID`) once the Notion database exists, so `/api/jobs` serves live vacancies. The site works without them &mdash; Jobs falls back to a representative list until they are set. Redeploy after adding them.
-4. **Test on the `.pages.dev` URL.** Click every page, the Calendly buttons, the Jobs list, the contact form. Nothing here touches your live domain or email yet.
+4. **Test on the `.pages.dev` URL.** Click every page, the Calendly buttons, the Jobs list and filters. Submit the contact form and the apply form once each — the first submit triggers the FormSubmit activation email to info@perfecthireglobal.com; click "Activate form" so real submissions come through from then on.
 5. **Custom domain in Cloudflare.** In the Pages project, add the custom domain `perfecthireglobal.com` (and `www.perfecthireglobal.com`). Cloudflare shows you the exact DNS records to create.
 6. **DNS at Strato (do this last, carefully).** This is the only risky step, because your Microsoft 365 email lives on this domain.
    - **Before touching anything, write down all current DNS records at Strato** &mdash; especially `MX`, and the `TXT` records for `SPF`, `DKIM` and `DMARC`. These keep your email working.
@@ -50,7 +65,7 @@ Every later push to the connected GitHub branch redeploys automatically.
 ## Known placeholders / follow ups
 
 - **Office addresses**: the Contact page intentionally does not list street addresses (only city and email), per your instruction that they are not important for now.
-- **Contact form**: it does not send anywhere yet. Submitting it opens your Calendly link in a new tab, matching the original design &mdash; there is no backend collecting the form fields. Say the word if you want submissions captured somewhere (email, a spreadsheet, a CRM).
+- **Forms**: both the contact form and the candidate apply form email info@perfecthireglobal.com via FormSubmit (see the "Forms & email" section above). Remember the one-time activation click on first submit.
 - **Domain cutover from Strato**: moving perfecthireglobal.com to point at the new Cloudflare Pages site is a DNS change, not a code change. Do this last, with the current Wix site still live as a fallback, and carry over your existing MX/SPF/DKIM/DMARC records exactly so Microsoft 365 email keeps working. Happy to walk through this step by step when you are ready.
 - **Mobile layout**: the original design files had no mobile/responsive rules (fixed widths throughout), so the implementation matches that as built. Let me know if you want a responsive pass.
 

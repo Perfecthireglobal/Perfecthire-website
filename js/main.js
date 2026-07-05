@@ -93,9 +93,53 @@
     return wrap;
   }
 
-  function paint(jobs) {
+  function regionOf(job) {
+    const r = (job.region || '').toLowerCase();
+    if (r.indexOf('eu') !== -1 || r.indexOf('europe') !== -1) return 'eu';
+    if (r.indexOf('us') !== -1 || r.indexOf('united states') !== -1) return 'us';
+    return 'other';
+  }
+
+  // Leadership vs individual contributor, inferred from the title.
+  // Match whole words so "Account" doesn't accidentally match "cco", etc.
+  function levelOf(job) {
+    const words = (job.title || '').toLowerCase().split(/[^a-z]+/).filter(Boolean);
+    const leadWords = ['vp', 'svp', 'head', 'chief', 'director', 'cro', 'cco', 'ceo', 'president', 'vice', 'lead', 'manager'];
+    return words.some((w) => leadWords.indexOf(w) !== -1) ? 'leadership' : 'ic';
+  }
+
+  function matches(job, f) {
+    if (f === 'all') return true;
+    if (f === 'us' || f === 'eu') return regionOf(job) === f;
+    if (f === 'ic' || f === 'leadership') return levelOf(job) === f;
+    return true;
+  }
+
+  let allJobs = fallback;
+  let activeFilter = 'all';
+
+  function render() {
+    const shown = allJobs.filter((job) => matches(job, activeFilter));
     list.innerHTML = '';
-    jobs.forEach((job) => list.appendChild(card(job)));
+    if (!shown.length) {
+      const empty = document.createElement('div');
+      empty.style.cssText = 'font-size:15px;color:#8fa5b5;padding:8px 2px;';
+      empty.textContent = 'No open roles match this filter right now.';
+      list.appendChild(empty);
+      return;
+    }
+    shown.forEach((job) => list.appendChild(card(job)));
+  }
+
+  const filterBar = document.getElementById('jobs-filters');
+  if (filterBar) {
+    filterBar.addEventListener('click', (e) => {
+      const btn = e.target.closest('.job-filter');
+      if (!btn) return;
+      activeFilter = btn.dataset.filter || 'all';
+      filterBar.querySelectorAll('.job-filter').forEach((b) => b.classList.toggle('is-active', b === btn));
+      render();
+    });
   }
 
   fetch('/api/jobs')
@@ -103,16 +147,39 @@
       if (!r.ok) throw new Error('jobs api unavailable');
       return r.json();
     })
-    .then((jobs) => paint(jobs && jobs.length ? jobs : fallback))
-    .catch(() => paint(fallback));
+    .then((jobs) => { allJobs = jobs && jobs.length ? jobs : fallback; render(); })
+    .catch(() => { allJobs = fallback; render(); });
 })();
 
-(function contactForm() {
-  const btn = document.getElementById('consult-submit');
-  if (!btn) return;
-  const okMsg = document.getElementById('consult-ok');
-  btn.addEventListener('click', () => {
-    okMsg.style.display = 'block';
-    window.open('https://calendly.com/perfecthire/introduction-call-perfecthireglobal', '_blank', 'noopener');
+(function forms() {
+  const forms = document.querySelectorAll('form.ph-form');
+  if (!forms.length) return;
+
+  // Point the FormSubmit redirect at the current site (works on both the
+  // *.pages.dev preview and the live domain), falling back to the value
+  // already in the HTML if anything is off.
+  forms.forEach((form) => {
+    const next = form.querySelector('input[name="_next"]');
+    if (next && location.origin && location.origin.indexOf('http') === 0) {
+      next.value = location.origin + '/thanks.html';
+    }
   });
+
+  // Candidate application: require either a LinkedIn URL or an uploaded CV.
+  const apply = document.getElementById('apply-form');
+  if (apply) {
+    const err = document.getElementById('apply-error');
+    apply.addEventListener('submit', (e) => {
+      const linkedin = (apply.querySelector('input[name="LinkedIn"]') || {}).value || '';
+      const cvInput = apply.querySelector('input[name="CV"]');
+      const hasCv = cvInput && cvInput.files && cvInput.files.length > 0;
+      if (!linkedin.trim() && !hasCv) {
+        e.preventDefault();
+        if (err) {
+          err.style.display = 'block';
+          err.scrollIntoView({ block: 'center', behavior: 'smooth' });
+        }
+      }
+    });
+  }
 })();
