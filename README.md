@@ -9,11 +9,18 @@ context, kept for reference).
 
 - `index.html`, `for-companies.html`, `investors.html`, `jobs.html`, `about.html`, `contact.html` — the six main pages, each self-contained (nav/footer duplicated on purpose, no build step)
 - `apply.html` — open application page for candidates (CV upload or LinkedIn link)
-- `thanks.html` — confirmation page shown after any form is submitted
+- `thanks.html` — post-submit page doubling as a VSL / "why work with us" page. **To add your video:** open `thanks.html` and replace the placeholder video block with your embed (there's a commented example for YouTube/Vimeo/Loom right above it).
+
+## Conversion elements you can personalise
+
+- **Homepage "Without / With PerfectHire"** — the notification-style comparison with Gmail/Slack/Shopify icons. Pure HTML/CSS, edit the copy in `index.html`.
+- **Testimonials as messages** — the homepage testimonials look like real email/WhatsApp/Slack messages. Each has an app icon **and** a profile photo. The photos are placeholders at `assets/review-nicole.png`, `review-ellen.png`, `review-pete.png`, `review-simran.png` — **overwrite those four files with real headshots (same filenames)** and they appear automatically. Same placeholders are used on `thanks.html`.
+- **FAQ accordions** — on the homepage and the Investors page (`.faq` blocks). Add/edit questions directly in the HTML; the open/close behaviour is handled by `js/main.js`.
 - `css/styles.css` — shared base styles, fonts, animations
 - `js/main.js` — shared behavior: homepage live placements ticker/map beacon, US/Europe expansion toggle, Jobs listing fetch + filters, and the form helpers (redirect target + application validation)
 - `assets/` — logo, Ralph's photo, world map graphic, social share image
-- `functions/api/jobs.js` — Cloudflare Pages Function that reads open roles from Notion server side (see `docs/notion-jobs-schema.md`)
+- `functions/api/jobs.js` — Cloudflare Pages Function that reads the open-roles list from Notion server side (see `docs/notion-jobs-schema.md`)
+- `functions/jobs/[slug].js` — Cloudflare Pages Function that renders each job's own detail page at a clean URL like `/jobs/country-manager-uk`, server-side from Notion. The Jobs list links to these; the slug comes from the Notion `Slug` field (or is generated from the title). If Notion is not configured or the role is gone, it shows a branded "role no longer listed" page.
 - `404.html` — branded not-found page (Cloudflare Pages serves this automatically)
 - `robots.txt`, `sitemap.xml` — SEO / crawler files
 

@@ -74,6 +74,10 @@
     { title: 'VP Sales DACH', region: 'EU', company: 'Series A martech startup', location: 'Berlin, DE (remote)', comp: '€160k to €200k OTE' },
   ];
 
+  function slugify(input) {
+    return (input || '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  }
+
   function card(job) {
     const wrap = document.createElement('div');
     wrap.style.cssText = 'display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;background:#0c1728;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:26px 30px;';
@@ -85,11 +89,13 @@
         </div>
         <div style="font-size:14.5px;color:#8fa5b5;"></div>
       </div>
-      <a href="contact.html" style="font-size:14px;color:#e4eaf0;border:1px solid rgba(255,255,255,.2);padding:11px 20px;border-radius:8px;white-space:nowrap;text-decoration:none;">View role &nbsp;&rarr;</a>
+      <a class="job-view" style="font-size:14px;color:#e4eaf0;border:1px solid rgba(255,255,255,.2);padding:11px 20px;border-radius:8px;white-space:nowrap;text-decoration:none;">View role &nbsp;&rarr;</a>
     `;
     wrap.querySelector('span').textContent = job.title;
     wrap.querySelectorAll('span')[1].textContent = job.region;
     wrap.querySelector('div > div:last-child').textContent = `${job.company} · ${job.location} · ${job.comp}`;
+    const slug = job.slug || slugify(job.title);
+    wrap.querySelector('.job-view').setAttribute('href', '/jobs/' + encodeURIComponent(slug));
     return wrap;
   }
 
@@ -149,6 +155,22 @@
     })
     .then((jobs) => { allJobs = jobs && jobs.length ? jobs : fallback; render(); })
     .catch(() => { allJobs = fallback; render(); });
+})();
+
+(function faqAccordion() {
+  const items = document.querySelectorAll('.faq');
+  if (!items.length) return;
+  items.forEach((item) => {
+    const q = item.querySelector('.faq-q');
+    if (!q) return;
+    q.addEventListener('click', () => {
+      const isOpen = item.classList.contains('is-open');
+      // close siblings within the same list for a clean single-open accordion
+      const list = item.parentElement;
+      list.querySelectorAll('.faq.is-open').forEach((el) => el.classList.remove('is-open'));
+      if (!isOpen) item.classList.add('is-open');
+    });
+  });
 })();
 
 (function forms() {

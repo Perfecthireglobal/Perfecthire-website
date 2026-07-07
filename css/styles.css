@@ -18,3 +18,20 @@ a{cursor:pointer}
 
 .job-filter{font-family:'IBM Plex Sans',sans-serif;font-size:13.5px;padding:9px 16px;border-radius:20px;cursor:pointer;transition:all .15s ease;border:1px solid rgba(255,255,255,.16);background:transparent;color:#c1cdd8;}
 .job-filter.is-active{background:var(--accent,#47AEF2);color:#08172c;border-color:transparent;font-weight:600;}
+
+/* FAQ accordion */
+.faq{border-bottom:1px solid rgba(12,28,51,.1);}
+.faq-q{width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;background:none;border:none;cursor:pointer;text-align:left;padding:24px 4px;font-family:'Archivo',sans-serif;font-weight:700;font-size:19px;letter-spacing:-.01em;color:#0c1c33;}
+.faq-ic{flex:none;width:26px;height:26px;position:relative;transition:transform .25s ease;color:var(--accent,#47AEF2);}
+.faq-ic::before,.faq-ic::after{content:"";position:absolute;background:currentColor;border-radius:2px;}
+.faq-ic::before{left:50%;top:4px;transform:translateX(-50%);width:2.5px;height:18px;}
+.faq-ic::after{top:50%;left:4px;transform:translateY(-50%);height:2.5px;width:18px;}
+.faq.is-open .faq-ic{transform:rotate(45deg);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+.faq-a-inner{padding:0 4px 26px;font-size:15.5px;line-height:1.7;color:#546371;max-width:760px;}
+.faq.is-open .faq-a{max-height:420px;}
+
+/* dark FAQ variant (navy background) */
+.faq--dark{border-bottom-color:rgba(255,255,255,.1);}
+.faq--dark .faq-q{color:#fff;}
+.faq--dark .faq-a-inner{color:#aeb9c4;}
