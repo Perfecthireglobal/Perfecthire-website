@@ -157,6 +157,46 @@
     .catch(() => { allJobs = fallback; render(); });
 })();
 
+(function scrollReveal() {
+  if (!('IntersectionObserver' in window)) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+
+  const sections = Array.from(document.querySelectorAll('section'));
+  sections.forEach((sec, si) => {
+    if (si === 0) return; // leave the hero visible immediately (LCP)
+    const container = sec.querySelector(':scope > div');
+    if (!container) return;
+
+    let kids = Array.from(container.children);
+    if (kids.length === 1 && kids[0].children.length > 1) kids = Array.from(kids[0].children);
+
+    // expand multi-item rows so cards animate in one by one
+    const targets = [];
+    kids.forEach((k) => {
+      const st = k.getAttribute('style') || '';
+      const isRow = k.children.length >= 3 &&
+        (st.indexOf('grid-template-columns') !== -1 || st.indexOf('display:grid') !== -1 || st.indexOf('display:flex') !== -1);
+      if (isRow) Array.from(k.children).forEach((c) => targets.push(c));
+      else targets.push(k);
+    });
+
+    targets.forEach((el, i) => {
+      // skip elements that are hidden (e.g. the inactive US/Europe toggle panel),
+      // otherwise they would stay stuck at opacity:0 when later shown
+      if (el.offsetParent === null) return;
+      el.classList.add('reveal');
+      el.style.transitionDelay = Math.min(i, 6) * 70 + 'ms';
+      io.observe(el);
+    });
+  });
+})();
+
 (function navToggle() {
   document.querySelectorAll('.ph-nav-toggle').forEach((btn) => {
     btn.addEventListener('click', () => {
