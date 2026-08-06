@@ -257,27 +257,25 @@
 })();
 
 // Hero: rotating role word under the headline.
-// The word is visible by default (CSS), so it never appears blank even
-// without JS; this just cycles through the list.
 (function rotateWords() {
   const el = document.querySelector('.ph-rotate-word');
   if (!el) return;
   const words = (el.getAttribute('data-words') || '').split('|').filter(Boolean);
-  if (!words.length) return;
-  el.textContent = words[0];
   if (words.length < 2) return;
   const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  el.textContent = words[0];
+  el.classList.add('in');
   if (reduce) return;
   let i = 0;
   setInterval(() => {
-    el.classList.add('out'); // current word slides up and fades
+    el.classList.remove('in');
+    el.classList.add('out');
     setTimeout(() => {
       i = (i + 1) % words.length;
       el.textContent = words[i];
       el.classList.remove('out');
-      el.classList.add('pre'); // jump below with no transition
-      void el.offsetWidth; // reflow
-      el.classList.remove('pre'); // animate up into place
+      void el.offsetWidth; // reflow so the entrance transition runs
+      el.classList.add('in');
     }, 520);
   }, 2600);
 })();
