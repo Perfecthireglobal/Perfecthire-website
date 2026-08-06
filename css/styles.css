@@ -126,10 +126,10 @@ img{max-width:100%}
 .ph-rotate-box{position:relative;display:inline-block;min-width:230px;height:1.55em;overflow:hidden;vertical-align:middle;}
 .ph-rotate-word{position:absolute;left:0;top:0;white-space:nowrap;
   font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;letter-spacing:.005em;color:var(--accent,#47AEF2);text-transform:none;
-  opacity:1;transform:none;
+  opacity:0;transform:translateY(120%);
   transition:opacity .5s ease,transform .5s cubic-bezier(.16,.7,.3,1);}
+.ph-rotate-word.in{opacity:1;transform:translateY(0);}
 .ph-rotate-word.out{opacity:0;transform:translateY(-120%);}
-.ph-rotate-word.pre{opacity:0;transform:translateY(120%);transition:none;}
 @media (max-width:520px){.ph-rotate-box{min-width:180px;} .ph-rotator{font-size:11px;}}
 
 /* E. Floating notification cards in the hero (desktop only) */
