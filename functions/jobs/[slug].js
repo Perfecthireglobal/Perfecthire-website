@@ -39,19 +39,23 @@ function bullets(text) {
     + '</ul>';
 }
 
-function page({ title, body, status }) {
+function page({ title, body, status, head, description, canonical }) {
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
+${description ? `<meta name="description" content="${esc(description)}">` : ''}
+${canonical ? `<link rel="canonical" href="${esc(canonical)}">` : ''}
+<meta name="robots" content="index, follow">
 <meta name="theme-color" content="#091429">
 <link rel="icon" href="/assets/logo-navy.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/styles.css">
+${head || ''}
 </head>
 <body>
 <div style="--accent:#47AEF2;width:100%;background:#091429;color:#fff;font-family:'IBM Plex Sans',sans-serif;min-height:100vh;">
@@ -138,9 +142,9 @@ export async function onRequestGet(context) {
     title: plainText(p['Functietitel'] && p['Functietitel'].title),
     company: plainText(p['Bedrijf'] && p['Bedrijf'].rich_text),
     location: plainText(p['Locatie'] && p['Locatie'].rich_text),
-    region: plainText(p['Regio'] && p['Regio'].rich_text),
+    region: (p['Regio'] && p['Regio'].select && p['Regio'].select.name) || '',
     comp: plainText(p['Salarisrange'] && p['Salarisrange'].rich_text),
-    type: (p['Dienstverband'] && p['Dienstverband'].select && p['Dienstverband'].select.name) || '',
+    type: plainText(p['Dienstverband'] && p['Dienstverband'].rich_text),
     description: plainText(p['Omschrijving'] && p['Omschrijving'].rich_text),
     requirements: plainText(p['Vereisten'] && p['Vereisten'].rich_text),
   };
@@ -177,5 +181,45 @@ export async function onRequestGet(context) {
     </div>
   </section>`;
 
-  return page({ title: `${job.title} · PerfectHire Global`, body });
+  const canonical = 'https://perfecthireglobal.com/jobs/' + slug;
+  const metaDesc = (job.description || ('Open revenue role: ' + job.title + '.'))
+    .replace(/\s+/g, ' ').trim().slice(0, 155);
+  const isRemote = /remote|telecommut|thuis/i.test((job.location || '') + ' ' + (job.type || ''));
+  const country = job.region === 'US' ? 'US' : 'NL';
+  const jobLd = {
+    '@context': 'https://schema.org/',
+    '@type': 'JobPosting',
+    title: job.title,
+    description: (paragraphs(job.description) || ('<p>' + esc(job.title) + '</p>'))
+      + (job.requirements ? '<h3>What you bring</h3>' + bullets(job.requirements) : ''),
+    datePosted: match.created_time || new Date().toISOString(),
+    validThrough: new Date(Date.now() + 90 * 864e5).toISOString(),
+    employmentType: /part|deeltijd/i.test(job.type || '') ? 'PART_TIME' : 'FULL_TIME',
+    hiringOrganization: { '@type': 'Organization', name: job.company || 'Confidential client (via PerfectHire Global)' },
+    identifier: { '@type': 'PropertyValue', name: 'PerfectHire Global', value: slug },
+    url: canonical,
+    directApply: true,
+    jobLocation: { '@type': 'Place', address: { '@type': 'PostalAddress', addressLocality: job.location || '', addressCountry: country } },
+  };
+  if (job.comp) {
+    const nums = (job.comp.match(/\d[\d.,]*/g) || []).map((x) => parseInt(x.replace(/[.,]/g, ''), 10)).filter((n) => n >= 1000);
+    if (nums.length) {
+      const qv = { '@type': 'QuantitativeValue', unitText: 'YEAR' };
+      if (nums.length >= 2) { qv.minValue = Math.min.apply(null, nums); qv.maxValue = Math.max.apply(null, nums); }
+      else { qv.value = nums[0]; }
+      jobLd.baseSalary = { '@type': 'MonetaryAmount', currency: /€|EUR/.test(job.comp) ? 'EUR' : 'USD', value: qv };
+    }
+  }
+  if (isRemote) {
+    jobLd.jobLocationType = 'TELECOMMUTE';
+    jobLd.applicantLocationRequirements = { '@type': 'Country', name: country === 'US' ? 'United States' : 'Netherlands' };
+  }
+  const head = '<meta property="og:title" content="' + esc(job.title + ' · PerfectHire Global') + '">'
+    + '<meta property="og:type" content="website">'
+    + '<meta property="og:url" content="' + canonical + '">'
+    + '<meta property="og:image" content="https://perfecthireglobal.com/assets/brand-social.png">'
+    + '<meta name="twitter:card" content="summary_large_image">'
+    + '<script type="application/ld+json">' + JSON.stringify(jobLd) + '</script>';
+
+  return page({ title: `${job.title} · PerfectHire Global`, body, head: head, description: metaDesc, canonical: canonical });
 }

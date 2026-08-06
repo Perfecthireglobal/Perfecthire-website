@@ -255,3 +255,55 @@
     });
   }
 })();
+
+// Hero: rotating role word under the headline.
+(function rotateWords() {
+  const el = document.querySelector('.ph-rotate-word');
+  if (!el) return;
+  const words = (el.getAttribute('data-words') || '').split('|').filter(Boolean);
+  if (words.length < 2) return;
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  el.textContent = words[0];
+  el.classList.add('in');
+  if (reduce) return;
+  let i = 0;
+  setInterval(() => {
+    el.classList.remove('in');
+    el.classList.add('out');
+    setTimeout(() => {
+      i = (i + 1) % words.length;
+      el.textContent = words[i];
+      el.classList.remove('out');
+      void el.offsetWidth; // reflow so the entrance transition runs
+      el.classList.add('in');
+    }, 520);
+  }, 2600);
+})();
+
+// Proof band: count numbers up when they scroll into view.
+(function countUp() {
+  const els = document.querySelectorAll('.ph-count');
+  if (!els.length) return;
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const paint = (el, val) => {
+    el.textContent = (el.getAttribute('data-prefix') || '') + val + (el.getAttribute('data-suffix') || '');
+  };
+  const run = (el) => {
+    const to = parseInt(el.getAttribute('data-to'), 10) || 0;
+    if (reduce || to === 0) { paint(el, to); return; }
+    let start = null;
+    const dur = 1300;
+    const step = (ts) => {
+      if (start === null) start = ts;
+      const p = Math.min((ts - start) / dur, 1);
+      paint(el, Math.round(to * (1 - Math.pow(1 - p, 3))));
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+  if (!('IntersectionObserver' in window)) { els.forEach(run); return; }
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => { if (e.isIntersecting) { run(e.target); io.unobserve(e.target); } });
+  }, { threshold: 0.5 });
+  els.forEach((el) => { paint(el, 0); io.observe(el); });
+})();
