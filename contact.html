@@ -72,12 +72,12 @@
 
       <!-- right: form -->
       <div style="background:rgba(11,22,39,.7);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:40px;">
-        <form class="ph-form" action="https://formsubmit.co/info@perfecthireglobal.com" method="POST" enctype="multipart/form-data">
-          <input type="hidden" name="_subject" value="New consultation request — PerfectHire Global">
-          <input type="hidden" name="_template" value="table">
-          <input type="hidden" name="_captcha" value="false">
-          <input type="hidden" name="_next" value="https://perfecthireglobal.com/thanks.html">
-          <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+        <form class="ph-form" action="https://api.web3forms.com/submit" method="POST" enctype="multipart/form-data">
+          <input type="hidden" name="access_key" value="39fbf05c-9c36-4080-bc05-57163137748e">
+          <input type="hidden" name="subject" value="New consultation request — PerfectHire Global">
+          <input type="hidden" name="from_name" value="PerfectHire Global website">
+          <input type="hidden" name="redirect" value="https://perfecthireglobal.com/thanks.html">
+          <input type="checkbox" name="botcheck" style="display:none;" tabindex="-1" autocomplete="off">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
             <div style="display:flex;flex-direction:column;gap:7px;">
               <label style="font-size:12.5px;color:#8fa5b5;font-weight:500;">Full name</label>
