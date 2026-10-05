@@ -114,36 +114,80 @@
     return words.some((w) => leadWords.indexOf(w) !== -1) ? 'leadership' : 'ic';
   }
 
-  function matches(job, f) {
-    if (f === 'all') return true;
-    if (f === 'us' || f === 'eu') return regionOf(job) === f;
-    if (f === 'ic' || f === 'leadership') return levelOf(job) === f;
+  // Combinable filters: Region AND Level AND free-text search.
+  const filters = { region: 'all', level: 'all' };
+  let searchTerm = '';
+
+  function matches(job) {
+    if (filters.region !== 'all' && regionOf(job) !== filters.region) return false;
+    if (filters.level !== 'all' && levelOf(job) !== filters.level) return false;
+    if (searchTerm) {
+      const hay = [job.title, job.company, job.location, job.region, job.comp]
+        .filter(Boolean).join(' ').toLowerCase();
+      if (hay.indexOf(searchTerm) === -1) return false;
+    }
     return true;
   }
 
+  const isFiltered = () =>
+    filters.region !== 'all' || filters.level !== 'all' || !!searchTerm;
+
   let allJobs = fallback;
-  let activeFilter = 'all';
+  const countEl = document.getElementById('jobs-count');
+  const clearBtn = document.getElementById('jobs-clear');
 
   function render() {
-    const shown = allJobs.filter((job) => matches(job, activeFilter));
+    const shown = allJobs.filter(matches);
     list.innerHTML = '';
     if (!shown.length) {
       const empty = document.createElement('div');
       empty.style.cssText = 'font-size:15px;color:#8fa5b5;padding:8px 2px;';
-      empty.textContent = 'No open roles match this filter right now.';
+      empty.textContent = 'No roles match these filters right now. Try widening them, or send us your CV below.';
       list.appendChild(empty);
-      return;
+    } else {
+      shown.forEach((job) => list.appendChild(card(job)));
     }
-    shown.forEach((job) => list.appendChild(card(job)));
+    if (countEl) {
+      const n = shown.length, total = allJobs.length;
+      countEl.textContent = isFiltered()
+        ? `Showing ${n} of ${total} ${total === 1 ? 'role' : 'roles'}`
+        : `${total} open ${total === 1 ? 'role' : 'roles'}`;
+    }
+    if (clearBtn) clearBtn.hidden = !isFiltered();
   }
 
-  const filterBar = document.getElementById('jobs-filters');
-  if (filterBar) {
-    filterBar.addEventListener('click', (e) => {
+  // Each group (region / level) is single-select; groups combine with AND.
+  const controls = document.getElementById('jobs-controls');
+  if (controls) {
+    controls.addEventListener('click', (e) => {
       const btn = e.target.closest('.job-filter');
       if (!btn) return;
-      activeFilter = btn.dataset.filter || 'all';
-      filterBar.querySelectorAll('.job-filter').forEach((b) => b.classList.toggle('is-active', b === btn));
+      const group = btn.closest('.jobs-fgroup');
+      const key = group && group.dataset.group;
+      if (!key) return;
+      filters[key] = btn.dataset.filter || 'all';
+      group.querySelectorAll('.job-filter').forEach((b) => b.classList.toggle('is-active', b === btn));
+      render();
+    });
+  }
+
+  const searchInput = document.getElementById('jobs-search');
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      searchTerm = searchInput.value.trim().toLowerCase();
+      render();
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      filters.region = 'all';
+      filters.level = 'all';
+      searchTerm = '';
+      if (searchInput) searchInput.value = '';
+      controls.querySelectorAll('.jobs-fgroup').forEach((g) => {
+        g.querySelectorAll('.job-filter').forEach((b, i) => b.classList.toggle('is-active', i === 0));
+      });
       render();
     });
   }

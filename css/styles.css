@@ -37,6 +37,18 @@ img{max-width:100%}
 .job-filter{font-family:'IBM Plex Sans',sans-serif;font-size:13.5px;padding:9px 16px;border-radius:20px;cursor:pointer;transition:all .15s ease;border:1px solid rgba(255,255,255,.16);background:transparent;color:#c1cdd8;}
 .job-filter.is-active{background:var(--accent,#47AEF2);color:#08172c;border-color:transparent;font-weight:600;}
 
+/* Jobs filter controls (search + combinable groups) */
+.jobs-search{width:100%;box-sizing:border-box;background:#0c1728;border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:13px 16px 13px 44px;color:#e4eaf0;font-family:'IBM Plex Sans',sans-serif;font-size:15px;outline:none;transition:border-color .15s ease;}
+.jobs-search:focus{border-color:var(--accent,#47AEF2);}
+.jobs-search::placeholder{color:#5f6f7e;}
+.jobs-search::-webkit-search-cancel-button{-webkit-appearance:none;}
+.jobs-fgroup{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.jobs-flabel{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#5f6f7e;}
+.jobs-fchips{display:flex;gap:8px;flex-wrap:wrap;}
+.jobs-clear{font-family:'IBM Plex Sans',sans-serif;font-size:13px;color:#8fa5b5;background:transparent;border:none;cursor:pointer;text-decoration:underline;padding:0;}
+.jobs-clear:hover{color:#e4eaf0;}
+@media (max-width:620px){.jobs-fgroup{flex-direction:column;align-items:flex-start;gap:9px;}}
+
 /* FAQ accordion */
 .faq{border-bottom:1px solid rgba(12,28,51,.1);}
 .faq-q{width:100%;display:flex;align-items:center;justify-content:space-between;gap:20px;background:none;border:none;cursor:pointer;text-align:left;padding:24px 4px;font-family:'Archivo',sans-serif;font-weight:700;font-size:19px;letter-spacing:-.01em;color:#0c1c33;}

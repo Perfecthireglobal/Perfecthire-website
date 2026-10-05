@@ -66,12 +66,33 @@
   <!-- FILTERS + LIST -->
   <section style="background:#0b1627;">
     <div style="max-width:1240px;margin:0 auto;padding:44px 48px 96px;">
-      <div id="jobs-filters" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px;">
-        <button class="job-filter is-active" data-filter="all">All roles</button>
-        <button class="job-filter" data-filter="us">United States</button>
-        <button class="job-filter" data-filter="eu">Europe</button>
-        <button class="job-filter" data-filter="ic">IC</button>
-        <button class="job-filter" data-filter="leadership">Leadership</button>
+      <div id="jobs-controls" style="margin-bottom:30px;">
+        <div style="position:relative;max-width:480px;margin-bottom:24px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5f6f7e" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="position:absolute;left:15px;top:50%;transform:translateY(-50%);pointer-events:none;"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input id="jobs-search" class="jobs-search" type="search" placeholder="Search role, company or location&hellip;" autocomplete="off" aria-label="Search roles">
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:30px;row-gap:18px;">
+          <div class="jobs-fgroup" data-group="region">
+            <span class="jobs-flabel">Region</span>
+            <div class="jobs-fchips">
+              <button class="job-filter is-active" data-filter="all">All</button>
+              <button class="job-filter" data-filter="us">United States</button>
+              <button class="job-filter" data-filter="eu">Europe</button>
+            </div>
+          </div>
+          <div class="jobs-fgroup" data-group="level">
+            <span class="jobs-flabel">Level</span>
+            <div class="jobs-fchips">
+              <button class="job-filter is-active" data-filter="all">All</button>
+              <button class="job-filter" data-filter="ic">IC</button>
+              <button class="job-filter" data-filter="leadership">Leadership</button>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:24px;flex-wrap:wrap;">
+          <div id="jobs-count" style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.06em;color:#8fa5b5;" aria-live="polite"></div>
+          <button id="jobs-clear" class="jobs-clear" type="button" hidden>Clear filters</button>
+        </div>
       </div>
 
       <div id="jobs-list" style="display:flex;flex-direction:column;gap:14px;">
