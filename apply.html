@@ -73,7 +73,7 @@
 
       <!-- right: form -->
       <div style="background:rgba(11,22,39,.7);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:40px;">
-        <form id="apply-form" class="ph-form" action="https://api.web3forms.com/submit" method="POST" enctype="multipart/form-data">
+        <form id="apply-form" class="ph-form" action="https://api.web3forms.com/submit" method="POST">
           <input type="hidden" name="access_key" value="39fbf05c-9c36-4080-bc05-57163137748e">
           <input type="hidden" name="subject" value="New open application — PerfectHire Global">
           <input type="hidden" name="from_name" value="PerfectHire Global website">
@@ -97,19 +97,20 @@
               <input class="ph-inp" name="Current role" placeholder="e.g. Enterprise AE">
             </div>
             <div style="display:flex;flex-direction:column;gap:7px;grid-column:1 / -1;">
-              <label style="font-size:12.5px;color:#8fa5b5;font-weight:500;">LinkedIn profile <span style="color:#5f6f7e;">(or upload a CV below)</span></label>
+              <label style="font-size:12.5px;color:#8fa5b5;font-weight:500;">LinkedIn profile <span style="color:#5f6f7e;">(or add a CV link below)</span></label>
               <input class="ph-inp" name="LinkedIn" type="url" placeholder="https://linkedin.com/in/your-profile">
             </div>
             <div style="display:flex;flex-direction:column;gap:7px;grid-column:1 / -1;">
-              <label style="font-size:12.5px;color:#8fa5b5;font-weight:500;">CV / resume <span style="color:#5f6f7e;">(PDF or Word, optional if you shared LinkedIn)</span></label>
-              <input class="ph-inp" name="CV" type="file" accept=".pdf,.doc,.docx" style="padding:11px 12px;color:#c1cdd8;">
+              <label style="font-size:12.5px;color:#8fa5b5;font-weight:500;">Link to your CV <span style="color:#5f6f7e;">(Google Drive, Dropbox, etc. &mdash; optional if you shared LinkedIn)</span></label>
+              <input class="ph-inp" name="CV link" type="url" placeholder="https://...">
+              <div style="font-size:12px;color:#5f6f7e;margin-top:3px;">Prefer to send a file? Email your CV to <a href="mailto:info@perfecthireglobal.com?subject=CV%20%E2%80%94%20Open%20application" style="color:var(--accent,#47AEF2);text-decoration:none;">info@perfecthireglobal.com</a></div>
             </div>
             <div style="display:flex;flex-direction:column;gap:7px;grid-column:1 / -1;">
               <label style="font-size:12.5px;color:#8fa5b5;font-weight:500;">Anything we should know?</label>
               <textarea class="ph-inp" name="Message" rows="3" style="resize:vertical;" placeholder="What you're looking for, where you want to be based, notice period"></textarea>
             </div>
           </div>
-          <div id="apply-error" style="display:none;margin-top:14px;font-size:13.5px;color:#ff8b7b;">Please add your LinkedIn URL or upload a CV so we have something to review.</div>
+          <div id="apply-error" style="display:none;margin-top:14px;font-size:13.5px;color:#ff8b7b;">Please add your LinkedIn URL or a link to your CV so we have something to review.</div>
           <button type="submit" style="width:100%;margin-top:22px;background:var(--accent,#47AEF2);color:#08172c;font-family:'Archivo',sans-serif;font-weight:700;font-size:16px;padding:16px;border:none;border-radius:10px;cursor:pointer;box-shadow:0 12px 30px -10px rgba(71,174,242,.7);">Send my details &nbsp;&rarr;</button>
           <p style="font-size:12px;color:#5f6f7e;line-height:1.6;margin:16px 0 0;">By sending your details you agree we may store them to consider you for relevant revenue roles. We never share your details without your permission.</p>
         </form>

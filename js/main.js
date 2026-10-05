@@ -227,25 +227,24 @@
   const forms = document.querySelectorAll('form.ph-form');
   if (!forms.length) return;
 
-  // Point the FormSubmit redirect at the current site (works on both the
+  // Point the Web3Forms redirect at the current site (works on both the
   // *.pages.dev preview and the live domain), falling back to the value
   // already in the HTML if anything is off.
   forms.forEach((form) => {
-    const next = form.querySelector('input[name="_next"]');
+    const next = form.querySelector('input[name="redirect"]');
     if (next && location.origin && location.origin.indexOf('http') === 0) {
       next.value = location.origin + '/thanks.html';
     }
   });
 
-  // Candidate application: require either a LinkedIn URL or an uploaded CV.
+  // Candidate application: require either a LinkedIn URL or a CV link.
   const apply = document.getElementById('apply-form');
   if (apply) {
     const err = document.getElementById('apply-error');
     apply.addEventListener('submit', (e) => {
       const linkedin = (apply.querySelector('input[name="LinkedIn"]') || {}).value || '';
-      const cvInput = apply.querySelector('input[name="CV"]');
-      const hasCv = cvInput && cvInput.files && cvInput.files.length > 0;
-      if (!linkedin.trim() && !hasCv) {
+      const cvlink = (apply.querySelector('input[name="CV link"]') || {}).value || '';
+      if (!linkedin.trim() && !cvlink.trim()) {
         e.preventDefault();
         if (err) {
           err.style.display = 'block';
@@ -257,25 +256,27 @@
 })();
 
 // Hero: rotating role word under the headline.
+// The word is visible by default (CSS), so it never appears blank even
+// without JS; this just cycles through the list.
 (function rotateWords() {
   const el = document.querySelector('.ph-rotate-word');
   if (!el) return;
   const words = (el.getAttribute('data-words') || '').split('|').filter(Boolean);
+  if (!words.length) return;
+  el.textContent = words[0];
   if (words.length < 2) return;
   const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  el.textContent = words[0];
-  el.classList.add('in');
   if (reduce) return;
   let i = 0;
   setInterval(() => {
-    el.classList.remove('in');
-    el.classList.add('out');
+    el.classList.add('out'); // current word slides up and fades
     setTimeout(() => {
       i = (i + 1) % words.length;
       el.textContent = words[i];
       el.classList.remove('out');
-      void el.offsetWidth; // reflow so the entrance transition runs
-      el.classList.add('in');
+      el.classList.add('pre'); // jump below with no transition
+      void el.offsetWidth; // reflow
+      el.classList.remove('pre'); // animate up into place
     }, 520);
   }, 2600);
 })();
