@@ -281,20 +281,57 @@
     }
   });
 
-  // Candidate application: require either a LinkedIn URL or a CV link.
+  // Candidate application: submit to our own /api/apply function (which
+  // emails the CV via Resend). Requires a CV upload, a CV link, or LinkedIn.
   const apply = document.getElementById('apply-form');
   if (apply) {
     const err = document.getElementById('apply-error');
+    const showErr = (msg) => {
+      if (!err) return;
+      if (msg) err.textContent = msg;
+      err.style.display = 'block';
+      err.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    };
     apply.addEventListener('submit', (e) => {
       const linkedin = (apply.querySelector('input[name="LinkedIn"]') || {}).value || '';
       const cvlink = (apply.querySelector('input[name="CV link"]') || {}).value || '';
-      if (!linkedin.trim() && !cvlink.trim()) {
+      const fileInput = apply.querySelector('input[name="cv"]');
+      const hasFile = fileInput && fileInput.files && fileInput.files.length > 0;
+
+      if (!linkedin.trim() && !cvlink.trim() && !hasFile) {
         e.preventDefault();
-        if (err) {
-          err.style.display = 'block';
-          err.scrollIntoView({ block: 'center', behavior: 'smooth' });
-        }
+        showErr('Please upload a CV, add a CV link, or share your LinkedIn URL so we have something to review.');
+        return;
       }
+
+      // Progressive enhancement: without fetch/FormData, let the browser do a
+      // normal POST (the function redirects to /thanks.html on success).
+      if (!window.fetch || !window.FormData) return;
+
+      e.preventDefault();
+      if (err) err.style.display = 'none';
+      const btn = apply.querySelector('button[type="submit"]');
+      const label = btn ? btn.innerHTML : '';
+      if (btn) { btn.disabled = true; btn.style.opacity = '.7'; btn.textContent = 'Sending…'; }
+
+      fetch(apply.getAttribute('action') || '/api/apply', {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'fetch' },
+        body: new FormData(apply),
+      })
+        .then((r) => r.json().then((d) => d).catch(() => ({ ok: r.ok })))
+        .then((data) => {
+          if (data && data.ok) {
+            window.location.href = '/thanks.html';
+          } else {
+            if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.innerHTML = label; }
+            showErr((data && data.error) || 'Something went wrong. Please email your CV to info@perfecthireglobal.com.');
+          }
+        })
+        .catch(() => {
+          if (btn) { btn.disabled = false; btn.style.opacity = ''; btn.innerHTML = label; }
+          showErr('Could not send right now. Please email your CV to info@perfecthireglobal.com.');
+        });
     });
   }
 })();
