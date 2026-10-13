@@ -4,8 +4,9 @@
 // key stays server-side and never reaches the browser.
 //
 // Requires environment variables on the Cloudflare Pages project
-// (Settings -> Environment variables):
-//   RESEND_API_KEY   Resend API key (the free plan is fine)
+// (Settings -> Variables and secrets), set for the PRODUCTION environment
+// and applied via a redeploy:
+//   RESEND_API_KEY   Resend API key (the free plan is fine) -- required
 //   APPLY_TO         (optional) recipient, defaults to info@perfecthireglobal.com
 //   APPLY_FROM       (optional) verified sender, e.g.
 //                    "PerfectHire Global <careers@send.perfecthireglobal.com>"
